@@ -33,24 +33,40 @@
 ##root.mainloop()
 
 import tkinter as tk
+from tkinter import *
+import tkinter.font as font
 
-def test(c):
-    msg = tk.Tk()
-    label = tk.Label(msg, text = c)
-    label.pack(side = "top", fill = "x", pady = 10)
-    B1 = tk.Button(msg, text = "Okay", command = msg.destroy)
-    B1.pack()
-    msg.mainloop()
+def test(l):
+    global buttonList, activeList, labelList, colours
+    bIndex = labelList.index(l)
+    if not activeList[bIndex]:
+        cButton = buttonList[bIndex]
+        cButton.config(bg = colours[bIndex])
+        activeList[bIndex] = True
+        msg = tk.Tk()
+        label = tk.Label(msg, text = l)
+        label.pack(side = "top", fill = "x", pady = 10)
+        B1 = tk.Button(msg, text = "Okay", command = msg.destroy)
+        B1.pack()
+        msg.mainloop()
+    else:
+        cButton = buttonList[bIndex]
+        cButton.config(bg = 'gray')
+        activeList[bIndex] = False
+    
 
 colours = ['red', 'green', 'orange', 'white']
 labelList = ['Fire', 'Extreme Weather', 'Active shooter', 'Public Safety']
+buttonList = []
+activeList = [False, False, False, False]
 r = 0
 root = tk.Tk()
+helv = font.Font(family='Helvetica', size=24, weight = "bold")
 for i in range(4):
     c = colours[i]
     l = labelList[i]
-    tk.Button(root, text = l, width = 15, command = lambda l = l: test(l)).grid(row = r, column = 0)
-    tk.Entry(bg = c, relief = tk.SUNKEN, width = 10).grid(row = r, column = 1)
-    r += 1
+    newButton = tk.Button(root, text = l, font = helv, bg = 'gray', height = 4, width = 16, command = lambda l = l: test(l))
+    newButton.grid(row = i // 2, column = i % 2, sticky = W+E+N+S)
+    buttonList.append(newButton)
 
 root.mainloop()
