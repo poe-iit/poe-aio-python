@@ -32,6 +32,8 @@ def start_connections(host, port, num_conns, message):
 def service_connection(key, mask):
     sock = key.fileobj
     data = key.data
+
+    # Got message from server
     if mask & selectors.EVENT_READ:
         recv_data = sock.recv(1024)  # Should be ready to read
         if recv_data:
@@ -41,6 +43,7 @@ def service_connection(key, mask):
             print("closing connection", data.connid)
             sel.unregister(sock)
             sock.close()
+    # Writing message back to server
     if mask & selectors.EVENT_WRITE:
         if not data.outb and data.messages:
             data.outb = data.messages.pop(0)
@@ -73,15 +76,18 @@ def main ():
     print ("Headless client has started, waiting for button press")
     #emergency_type = Button.listen_for_press()
     emergency_type = 2
+    print("Button Pressed")
 
     if emergency_type == 1:
         message = [b"Fire from headless client"]
+        #send message to server
         start_connections(host, int(port), int(num_conns), message)
         keep_connection_open()
     if emergency_type == 2:
         message = [b"Shooter from headless client"]
         start_connections(host, int(port), int(num_conns), message)
         keep_connection_open()
+
 
 if __name__ == "__main__":
     main()
