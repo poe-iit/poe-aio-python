@@ -2,22 +2,29 @@ import tkinter as tk
 from tkinter import *
 import tkinter.font as font
 
-def status(l): #Flips the status of a button between active or idle and creates a pop up
+def statusCheck(check, bIndex, msg): #Checks whether to flip the status, and flips it
     global buttonList, activeList, labelList, colours
-    bIndex = labelList.index(l) # Finds button
-    # Flips the status of button
-    if not activeList[bIndex]:
+    if check:
         cButton = buttonList[bIndex]
         cButton.config(bg = colours[bIndex])
         activeList[bIndex] = True
-        # Makes pop-up if status flipped to true
+    msg.destroy()
+
+def status(l): #Creates button for statusCheck to flip status of button
+    global buttonList, activeList, labelList, colours, w, h, helv
+    bIndex = labelList.index(l) # Finds button
+    # Flips the status of button
+    if not activeList[bIndex]: #Creates the pop-up for statusCheck
         msg = tk.Tk()
-        label = tk.Label(msg, text = l)
-        label.pack(side = "top", fill = "x", pady = 10)
-        B1 = tk.Button(msg, text = "Okay", command = msg.destroy)
-        B1.pack()
+        msg.geometry(str(w // 4) + 'x' + str(h // 4))
+        label = tk.Label(msg, text = l, font = helv)
+        label.pack(fill = "x", pady = h // 16)
+        B1 = tk.Button(msg, text = "Okay", command = lambda bIndex = bIndex: statusCheck(True, bIndex, msg))
+        B2 = tk.Button(msg, text = "Cancel", command = lambda bIndex = bIndex: statusCheck(False, bIndex, msg))
+        B1.pack(side = 'left', fill = 'both', expand = 1)
+        B2.pack(side = 'right', fill = 'both', expand = 1)
         msg.mainloop()
-    else:
+    else: #If already active, it will change it to non-active
         cButton = buttonList[bIndex]
         cButton.config(bg = 'gray')
         activeList[bIndex] = False
@@ -34,13 +41,13 @@ root.attributes('-fullscreen', True) # auto-set to fullscreen
 
 h = root.winfo_screenheight()
 w = root.winfo_screenwidth()
-root.geometry(str(root.winfo_screenwidth()) + 'x' + str(root.winfo_screenheight())) # Setting the window size
+root.geometry(str(w) + 'x' + str(h)) # Setting the window size
 
 root.bind("<Escape>", lambda event: root.attributes('-fullscreen', False)) # Pressing Escape turns off fullscreen
 root.bind("<Enter>", lambda event: root.attributes('-fullscreen', True)) # Pressing Enter turns on fullscreen
 root.bind("<Delete>", lambda event: root.destroy()) # Pressing Delete closes the window
 
-helv = font.Font(family='Helvetica', size=24, weight = "bold") # Font settings
+helv = font.Font(family = 'Helvetica', size = 24, weight = "bold") # Font settings
 
 for i in range(4): # Makes all 4 buttons and frames
     c = colours[i] 
