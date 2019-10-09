@@ -71,20 +71,21 @@ def keep_connection_open():
 
 def main ():
     host = "127.0.0.1"
-    port = 65432
+    port = 65433
     num_conns = 1
     print ("Headless client has started, waiting for button press")
     #emergency_type = Button.listen_for_press()
-    emergency_type = 2
+    emergency_type = 1
+
     print("Button Pressed")
 
     if emergency_type == 1:
-        message = [b"Fire from headless client"]
+        message = [b"Fire from headless client1"]
         #send message to server
         start_connections(host, int(port), int(num_conns), message)
         keep_connection_open()
     if emergency_type == 2:
-        message = [b"Shooter from headless client"]
+        message = [b"Shooter from headless client1"]
         start_connections(host, int(port), int(num_conns), message)
         keep_connection_open()
 
