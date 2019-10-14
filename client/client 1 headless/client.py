@@ -52,6 +52,11 @@ def service_connection(key, mask):
             sent = sock.send(data.outb)  # Should be ready to write
             data.outb = data.outb[sent:]
 
+    else:
+        print("closing connection to")
+        sel.unregister(sock)
+        sock.close()
+
 def keep_connection_open():
     try:
         while True:
@@ -59,9 +64,6 @@ def keep_connection_open():
             if events:
                 for key, mask in events:
                     service_connection(key, mask)
-            # Check for a socket being monitored to continue.
-            if not sel.get_map():
-                break
     except KeyboardInterrupt:
         print("caught keyboard interrupt, exiting")
     finally:
