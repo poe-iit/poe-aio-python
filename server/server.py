@@ -12,26 +12,30 @@ client_2_port = "65432"
 client_2_sending_address = "('127.0.0.1', 65432)"
 
 
-
 def start_connections(host, port, num_conns, message):
-    # starts a new connection to client 2
-    server_addr = (host, port)
-    for i in range(0, num_conns):
-        connid = i + 1
-        print("starting connection", connid, "to", server_addr)
-        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        sock.setblocking(False)
-        sock.connect_ex(server_addr)
-        events = selectors.EVENT_READ | selectors.EVENT_WRITE
-        data = types.SimpleNamespace(
-            connid=connid,
-            msg_total=1,
-            recv_total=0,
-            messages=message,
-            outb=b"",
-        )
-        sel.register(sock, events, data=data)
-        sock.send(data.messages)
+    try:
+        # starts a new connection to client 2
+        server_addr = (host, port)
+        for i in range(0, num_conns):
+            connid = i + 1
+            print("starting connection", connid, "to", server_addr)
+            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            sock.setblocking(False)
+            sock.connect_ex(server_addr)
+            events = selectors.EVENT_READ | selectors.EVENT_WRITE
+            data = types.SimpleNamespace(
+                connid=connid,
+                msg_total=1,
+                recv_total=0,
+                messages=message,
+                outb=b"",
+            )
+            sel.register(sock, events, data=data)
+            sock.send(data.messages)
+
+    except BlockingIOError:
+        print("travis sucks at socket programming, caught blocking error, retrying")
+        start_connections(host, port, num_conns, message)
 
 
 def alert_client_2(emergency_type, sock , data):
@@ -45,7 +49,7 @@ def alert_client_2(emergency_type, sock , data):
 def accept_wrapper(sock):
     conn, addr = sock.accept()  # Should be ready to read
     print("accepted connection from", addr)
-    conn.setblocking(False)
+    conn.setblocking(True)
     data = types.SimpleNamespace(addr=addr, inb=b"", outb=b"")
     events = selectors.EVENT_READ | selectors.EVENT_WRITE
     sel.register(conn, events, data=data)
