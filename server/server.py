@@ -34,7 +34,7 @@ class Server:
             init_sockets_and_listen(self)
 
 
-    # Connects to a client with specified host and port with a custom message
+    # Connects to a client with specified host and port with and sends custom message
     def start_connections(self, host, port, num_conns, message):
         try:
             # starts a new connection to client 2
@@ -61,6 +61,7 @@ class Server:
             self.start_connections(host, port, num_conns, message)
 
 
+    # Sends emergency message to the ceiling device
     def alert_client_2(self, message):
         host = client_2_ip
         port  = client_2_port
@@ -68,6 +69,7 @@ class Server:
         self.start_connections(host, int(port), int(num_conns), message)
 
 
+    # registers the new client with the socket
     def accept_wrapper(self, sock):
         conn, addr = sock.accept()  # Should be ready to read
         print("accepted connection from", addr)
@@ -99,9 +101,10 @@ class Server:
                     if "Shooter" in recieved_message:
                         print("Alerting Public Safety there is a shooter")
                         message =  b"FORWARDING EMERGENCY FROM HEADLESS CLIENT, Shooter"
-                        self.alert_client_2(message)
                         # Make GUI Popup for verification
                         # Once approved, call pyfirmata code on arduino to change lights
+
+                        self.alert_client_2(message)
             else:
                 print("closing connection to")
                 sel.unregister(sock)
@@ -115,27 +118,26 @@ class Server:
                 sent = sock.send(data.outb)  # Should be ready to write
                 data.outb = data.outb[sent:]
 
+    def main():
 
+        host = "127.0.0.1"
+        port = 65433
+        server = Server(host, port)
+        server.init_sockets_and_listen()
 
-def main():
+        try:
+            while True:
+                events = sel.select(timeout=None) # blocks until sockets are ready for I/O, then populates list of events for each socket
+                for key, mask in events:
+                    if key.data is None: # data is from a listening socket, we need to accept the connection and register it with the socket
+                        server.accept_wrapper(key.fileobj)
+                    else: # client has already been registered with the socket, we can service the connection and see what it contains
+                        server.service_connection(key, mask)
+        except KeyboardInterrupt:
+            print("caught keyboard interrupt, exiting")
+        finally:
+            sel.close()
 
-    host = "127.0.0.1"
-    port = 65433
-    server = Server(host, port)
-    server.init_sockets_and_listen()
-
-    try:
-        while True:
-            events = sel.select(timeout=None)
-            for key, mask in events:
-                if key.data is None:
-                    server.accept_wrapper(key.fileobj)
-                else:
-                    server.service_connection(key, mask)
-    except KeyboardInterrupt:
-        print("caught keyboard interrupt, exiting")
-    finally:
-        sel.close()
 
 if __name__ == "__main__":
     main()

@@ -27,16 +27,18 @@ root.bind("<Delete>", lambda event: root.destroy()) # Pressing Delete closes the
 helv = font.Font(family = 'Helvetica', size = 24, weight = "bold") # Font settings
 
 
+# For popup
 def statusCheck(check, bIndex, msg): #Checks whether to flip the status, and flips it
     global buttonList, activeList, labelList, colours
     if check:
         cButton = buttonList[bIndex]
         cButton.config(bg = colours[bIndex])
         activeList[bIndex] = True
-        Server.alert_client_2() #send emergency type to client 2
+        #Server.alert_client_2() #send emergency type to client 2
 
 
     msg.destroy()
+
 
 def status(l): #Creates button for statusCheck to flip status of button
     global buttonList, activeList, labelList, colours, w, h, helv
