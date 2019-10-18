@@ -3,7 +3,7 @@ import socket
 import selectors
 import types
 import threading
-
+from queue import Queue
 
 sel = selectors.DefaultSelector()
 
@@ -14,13 +14,16 @@ client_2_sending_address = "('127.0.0.1', 65432)"
 
 class Server:
 
-    def __init__(self, host, port):
+    def __init__(self, host, port, argv):
         self.host = host
         self.port = port
+        self.argv = argv
 
 
     # Registers and binds the sockets. Sets the socket to listen on the host and port to act as a server
     def init_sockets_and_listen(self):
+        global arg
+
         try:
             num_conns = 1
             lsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -31,7 +34,7 @@ class Server:
             sel.register(lsock, selectors.EVENT_READ, data=None)
         except:
             print("could not init socket, retrying")
-            init_sockets_and_listen(self)
+            self.init_sockets_and_listen()
 
 
     # Connects to a client with specified host and port with and sends custom message
@@ -81,6 +84,7 @@ class Server:
 
     # Handles every incoming connection to the server, determines if the message is meant to be read for contents or if the message is telling the server to shut down
     def service_connection(self,key, mask):
+        global arg
         sock = key.fileobj
         data = key.data
         #Reading data from the accepted message, see what type of emergency_type it is
@@ -95,16 +99,17 @@ class Server:
                     if "Fire" in recieved_message:
                         print("Alerting Public Safety there is a fire")
                         message =  b"FORWARDING EMERGENCY FROM HEADLESS CLIENT, Fire"
-                        self.alert_client_2(message)
+                        #self.alert_client_2(message)
                         # Make GUI Popup for verification
+                        arg.put(0)
                         # Once approved, call pyfirmata code on arduino to change lights
                     if "Shooter" in recieved_message:
                         print("Alerting Public Safety there is a shooter")
                         message =  b"FORWARDING EMERGENCY FROM HEADLESS CLIENT, Shooter"
                         # Make GUI Popup for verification
                         # Once approved, call pyfirmata code on arduino to change lights
-
-                        self.alert_client_2(message)
+                        arg.put(2)
+                        #self.alert_client_2(message)
             else:
                 print("closing connection to")
                 sel.unregister(sock)
@@ -118,13 +123,15 @@ class Server:
                 sent = sock.send(data.outb)  # Should be ready to write
                 data.outb = data.outb[sent:]
 
-    def main():
+    def main(argv):
+        global arg
+        arg = Queue()
+        arg = argv
 
         host = "127.0.0.1"
         port = 65433
-        server = Server(host, port)
+        server = Server(host, port, (argv, ))
         server.init_sockets_and_listen()
-
         try:
             while True:
                 events = sel.select(timeout=None) # blocks until sockets are ready for I/O, then populates list of events for each socket
@@ -138,6 +145,3 @@ class Server:
         finally:
             sel.close()
 
-
-if __name__ == "__main__":
-    main()

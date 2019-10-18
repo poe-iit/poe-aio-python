@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import *
 import tkinter.font as font
 import threading
+from queue import Queue
 
 from server import Server
 
@@ -81,9 +82,26 @@ def start_GUI():
     root.mainloop()
 
 
+def checkQueue(argv):
+    global labelList
+    print("starting queue check")
+    while True:
+        check = argv.get()
+        if check == -1:
+            break
+        else:
+            status(labelList[check])
+
 def main():
-    process = threading.Thread(target=Server.main)
+    argv = Queue()
+
+    process = threading.Thread(target=Server.main, args = (argv,))
     process.start()
+
+    check = threading.Thread(target = checkQueue, args = (argv,))
+    check.daemon = True
+    check.start()
+
     start_GUI()
 
 
