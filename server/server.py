@@ -22,7 +22,6 @@ class Server:
 
     # Registers and binds the sockets. Sets the socket to listen on the host and port to act as a server
     def init_sockets_and_listen(self):
-        global arg
 
         try:
             num_conns = 1
@@ -84,7 +83,6 @@ class Server:
 
     # Handles every incoming connection to the server, determines if the message is meant to be read for contents or if the message is telling the server to shut down
     def service_connection(self,key, mask):
-        global arg
         sock = key.fileobj
         data = key.data
         #Reading data from the accepted message, see what type of emergency_type it is
@@ -101,14 +99,14 @@ class Server:
                         message =  b"FORWARDING EMERGENCY FROM HEADLESS CLIENT, Fire"
                         #self.alert_client_2(message)
                         # Make GUI Popup for verification
-                        arg.put(0)
+                        self.argv.put(0)
                         # Once approved, call pyfirmata code on arduino to change lights
                     if "Shooter" in recieved_message:
                         print("Alerting Public Safety there is a shooter")
                         message =  b"FORWARDING EMERGENCY FROM HEADLESS CLIENT, Shooter"
                         # Make GUI Popup for verification
                         # Once approved, call pyfirmata code on arduino to change lights
-                        arg.put(2)
+                        self.argv.put(2)
                         #self.alert_client_2(message)
             else:
                 print("closing connection to")
@@ -124,13 +122,10 @@ class Server:
                 data.outb = data.outb[sent:]
 
     def main(argv):
-        global arg
-        arg = Queue()
-        arg = argv
 
         host = "127.0.0.1"
         port = 65433
-        server = Server(host, port, (argv, ))
+        server = Server(host, port, argv)
         server.init_sockets_and_listen()
         try:
             while True:
