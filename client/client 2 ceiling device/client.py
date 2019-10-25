@@ -92,7 +92,6 @@ class Client:
 
 
     def checkQueue(self,queue):
-        global labelList
         print("starting queue check")
         while True:
             check = queue.get() # halts until something is in the queue
@@ -119,12 +118,13 @@ class Client:
         process = Thread(target=gpio_object.listen_for_smoke)
         process.start()
 
+        print("Listening for smoke")
+
         # start thread that checks for updates to the queue
-        check = threading.Thread(target = client.checkQueue, args = (queue,))
+        check = Thread(target = client.checkQueue, args = (queue,))
         check.daemon = True
         check.start()
 
-        print("Listening for smoke")
 
         host = "127.0.0.1"
         port = 65432
