@@ -17,14 +17,17 @@ from gpio_pins import CeilingDeviceGPIO
 from threading import Thread
 
 
-server_address = "127.0.0.1:65433"
 
-sel = selectors.DefaultSelector()
+
 
 
 class Client:
 
-    def start_connections(host, port, num_conns, message):
+    def __init__(server_address, sel):
+        self.server_address = server_address
+        self.sel = sel
+
+    def start_connections(self, host, port, num_conns, message):
         server_addr = (host, port)
         for i in range(0, num_conns):
             connid = i + 1
@@ -40,10 +43,10 @@ class Client:
                 messages=list(message),
                 outb=b"",
             )
-            sel.register(sock, events, data=data)
+            self.sel.register(sock, events, data=data)
 
 
-    def service_connection(key, mask):
+    def service_connection(self, key, mask):
         sock = key.fileobj
         data = key.data
 
@@ -64,7 +67,7 @@ class Client:
 
             if not recv_data:
                 print("closing connection")
-                sel.unregister(sock)
+                self.sel.unregister(sock)
                 sock.close()
         # Writing message back to server
         #if mask & selectors.EVENT_WRITE:
@@ -77,17 +80,21 @@ class Client:
 
 
 
-    def accept_wrapper(sock):
+    def accept_wrapper(self, sock):
         conn, addr = sock.accept()  # Should be ready to read
         print("accepted connection from", addr)
         conn.setblocking(False)
         data = types.SimpleNamespace(addr=addr, inb=b"", outb=b"")
         events = selectors.EVENT_READ | selectors.EVENT_WRITE
-        sel.register(conn, events, data=data)
+        self.sel.register(conn, events, data=data)
 
 
 
     def main():
+
+        server_address = "127.0.0.1:65433"
+        sel = selectors.DefaultSelector()
+        client = Client(server_address, sel)
 
         CeilingDeviceGPIO.init() # init GPIO pins on device
 
