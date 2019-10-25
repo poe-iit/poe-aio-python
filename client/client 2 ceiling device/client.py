@@ -24,7 +24,7 @@ from queue import Queue
 
 class Client:
 
-    def __init__(self,server_address, server_port sel):
+    def __init__(self,server_address, server_port, sel):
         self.server_address = server_address
         self.server_port = server_port
         self.sel = sel
