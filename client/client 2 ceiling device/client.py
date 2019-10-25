@@ -145,7 +145,7 @@ class Client:
 
 
         print("Starting connection to server")
-        self.start_connections("127.0.0.1", int(65433), int(num_conns), message)
+        client.start_connections("127.0.0.1", int(65433), int(num_conns), message)
 
         try:
             while True:
