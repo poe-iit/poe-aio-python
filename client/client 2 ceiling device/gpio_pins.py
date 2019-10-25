@@ -35,7 +35,7 @@ class CeilingDeviceGPIO:
             if not GPIO.input(13):
                 print('Smoke Detected')
                 GPIO.output(9, GPIO.HIGH) #trigger fire alert
-                smoke_count++
+                smoke_count+=1
             time.sleep(1)
         print("Smoke detected from ceiling client, notifying server and turning on fire lights")
         listen_for_smoke() #start listening again
