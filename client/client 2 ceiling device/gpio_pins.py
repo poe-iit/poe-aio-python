@@ -31,7 +31,7 @@ class CeilingDeviceGPIO:
     def listen_for_smoke():
 
         while True:
-            if GPIO.input(13):
+            if not GPIO.input(13):
                 print('Smoke Detected')
                 GPIO.output(9, GPIO.HIGH) #trigger fire alert
             time.sleep(0.0001)
