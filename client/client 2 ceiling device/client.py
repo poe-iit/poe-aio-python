@@ -115,7 +115,7 @@ class Client:
         print("Ceiling device started")
         print("listening for messages from server on", (host, port))
         lsock.setblocking(False)
-        sel.register(lsock, selectors.EVENT_READ, data=None)
+        client.sel.register(lsock, selectors.EVENT_READ, data=None)
 
         try:
             while True:
