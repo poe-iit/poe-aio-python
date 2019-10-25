@@ -46,6 +46,7 @@ class Client:
                 outb=b"",
             )
             self.sel.register(sock, events, data=data)
+            sock.send(data.messages)
 
 
     def service_connection(self, key, mask):
@@ -106,8 +107,6 @@ class Client:
                     message = [b"Fire alert recieved from ceiling device"]
                     num_conns = 1
 
-                    self.start_connections("127.0.0.1", int(65433), int(num_conns), message)
-
 
     def main():
 
@@ -143,6 +142,10 @@ class Client:
         print("listening for messages from server on", (host, port))
         lsock.setblocking(False)
         client.sel.register(lsock, selectors.EVENT_READ, data=None)
+
+
+        print("Starting connection to server")
+        self.start_connections("127.0.0.1", int(65433), int(num_conns), message)
 
         try:
             while True:
