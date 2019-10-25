@@ -97,7 +97,7 @@ class Server:
                     if "Fire" in recieved_message:
                         print("Alerting Public Safety there is a fire")
                         message =  b"FORWARDING EMERGENCY FROM HEADLESS CLIENT, Fire"
-                        #self.alert_client_2(message)
+                        self.alert_client_2(message)
                         # Make GUI Popup for verification
                         self.argv.put(0)
                         # Once approved, call pyfirmata code on arduino to change lights
@@ -107,7 +107,7 @@ class Server:
                         # Make GUI Popup for verification
                         # Once approved, call pyfirmata code on arduino to change lights
                         self.argv.put(2)
-                        #self.alert_client_2(message)
+                        self.alert_client_2(message)
             else:
                 print("closing connection to")
                 sel.unregister(sock)
