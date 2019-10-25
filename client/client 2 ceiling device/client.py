@@ -42,7 +42,7 @@ class Client:
                 connid=connid,
                 msg_total=sum(len(m) for m in message),
                 recv_total=0,
-                messages=list(message),
+                messages=message,
                 outb=b"",
             )
             self.sel.register(sock, events, data=data)
