@@ -16,7 +16,8 @@ import time
 class CeilingDeviceGPIO:
 
 
-    def __init__(self):
+    def __init__(self, queue):
+        self.queue = queue
         return
 
     def listen_for_smoke(self):
@@ -30,6 +31,7 @@ class CeilingDeviceGPIO:
                 smoke_count+=1
             time.sleep(1)
         print("Smoke detected from ceiling client, notifying server and turning on fire lights")
+        self.queue.put(0) # 0 correlates to smoke
         time.sleep(5)
         self.listen_for_smoke() #start listening again
 

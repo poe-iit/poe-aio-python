@@ -109,12 +109,12 @@ class Client:
 
         server_address = "127.0.0.1:65433"
         sel = selectors.DefaultSelector()
-
-        client = Client(server_address, sel)
-        gpio_object = CeilingDeviceGPIO()
-
         # setup a queue to communicate between the listening for smoke thread and this main thread
         queue = Queue()
+
+        client = Client(server_address, sel)
+        gpio_object = CeilingDeviceGPIO(queue)
+
         # listen for the smoke detector in another thread
         process = Thread(target=gpio_object.listen_for_smoke, args = (queue,))
         process.start()
