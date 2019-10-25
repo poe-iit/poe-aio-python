@@ -16,6 +16,17 @@ import time
 class CeilingDeviceGPIO:
 
     def init(self):
+        setup_pins()
+
+    def listen_for_smoke(self):
+
+        while True:
+            if GPIO.input(13):
+                print('Smoke Detected')
+                self.write_to_GPIO(1)
+            time.sleep(0.0001)
+
+    def setup_pins():
         # Use BCM layout
         GPIO.setmode(GPIO.BCM)
 
@@ -27,14 +38,6 @@ class CeilingDeviceGPIO:
 
         # setup smoke detector listener pin
         GPIO.setup(13, GPIO.IN)
-
-    def listen_for_smoke(self):
-
-        while True:
-            if GPIO.input(13):
-                print('Smoke Detected')
-                self.write_to_GPIO(1)
-            time.sleep(0.0001)
 
     def write_to_GPIO(self, emergency_type):
 
