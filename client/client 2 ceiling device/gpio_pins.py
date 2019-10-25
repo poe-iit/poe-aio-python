@@ -34,7 +34,7 @@ class CeilingDeviceGPIO:
             if not GPIO.input(13):
                 print('Smoke Detected')
                 GPIO.output(9, GPIO.HIGH) #trigger fire alert
-            time.sleep(0.0001)
+            time.sleep(1)
 
     def write_to_GPIO(emergency_type):
 
