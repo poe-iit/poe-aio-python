@@ -1,4 +1,5 @@
 import RPi.GPIO as GPIO
+import time
 
 
 # Emergency Type 1, write to pin 9
