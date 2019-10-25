@@ -89,7 +89,7 @@ def main():
     CeilingDeviceGPIO.init() # init GPIO pins on device
 
     # listen for the smoke detector in another thread
-    process = Thread(target=CeilingDeviceGPIO.listen_for_smoke, args=[urls[ii], result, ii])
+    process = Thread(target=CeilingDeviceGPIO.listen_for_smoke)
     process.start()
     threads.append(process)
 
