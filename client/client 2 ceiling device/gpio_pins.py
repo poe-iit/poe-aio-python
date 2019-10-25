@@ -19,6 +19,7 @@ class CeilingDeviceGPIO:
         self.setup_pins()
 
     def listen_for_smoke(self):
+        GPIO.setmode(GPIO.BCM)
 
         while True:
             if GPIO.input(13):
