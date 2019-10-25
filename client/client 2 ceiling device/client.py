@@ -106,6 +106,7 @@ class Client:
                     print("Sending fire alert to server")
                     message = [b"Fire alert recieved from ceiling device"]
                     num_conns = 1
+                    client.start_connections("127.0.0.1", int(65433), int(num_conns), message)
 
 
     def main():
@@ -143,9 +144,6 @@ class Client:
         lsock.setblocking(False)
         client.sel.register(lsock, selectors.EVENT_READ, data=None)
 
-
-        print("Starting connection to server")
-        client.start_connections("127.0.0.1", int(65433), int(num_conns), message)
 
         try:
             while True:
