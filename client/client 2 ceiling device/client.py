@@ -24,8 +24,9 @@ from queue import Queue
 
 class Client:
 
-    def __init__(self,server_address, sel):
+    def __init__(self,server_address, server_port sel):
         self.server_address = server_address
+        self.server_port = server_port
         self.sel = sel
 
     def start_connections(self, host, port, num_conns, message):
@@ -102,16 +103,19 @@ class Client:
                 # communicate with server
                 if check == 0:
                     print("Sending fire alert to server")
+                    message = [b"Fire alert recieved from ceiling device"]
+                    self.start_connections(client.server_address, client.server_port, int(num_conns), message)
 
 
     def main():
 
-        server_address = "127.0.0.1:65433"
+        server_address = "127.0.0.1"
+        server_port = "65433"
         sel = selectors.DefaultSelector()
         # setup a queue to communicate between the listening for smoke thread and this main thread
         queue = Queue()
 
-        client = Client(server_address, sel)
+        client = Client(server_address, server_port, sel)
         gpio_object = CeilingDeviceGPIO(queue)
 
         # listen for the smoke detector in another thread
