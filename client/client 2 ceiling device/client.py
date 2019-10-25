@@ -42,7 +42,7 @@ class Client:
                 connid=connid,
                 msg_total=sum(len(m) for m in message),
                 recv_total=0,
-                messages=message,
+                messages=message
                 outb=b"",
             )
             self.sel.register(sock, events, data=data)
@@ -104,7 +104,7 @@ class Client:
                 # communicate with server
                 if check == 0:
                     print("Sending fire alert to server")
-                    message = [b"Fire alert recieved from ceiling device"]
+                    message = b"Fire alert recieved from ceiling device"
                     num_conns = 1
                     self.start_connections("127.0.0.1", int(65433), int(num_conns), message)
 
