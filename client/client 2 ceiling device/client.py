@@ -121,9 +121,9 @@ class Client:
                 events = sel.select(timeout=None)
                 for key, mask in events:
                     if key.data is None:
-                        accept_wrapper(key.fileobj)
+                        client.accept_wrapper(key.fileobj)
                     else:
-                        service_connection(key, mask)
+                        client.service_connection(key, mask)
         except KeyboardInterrupt:
             print("caught keyboard interrupt, exiting")
         finally:
