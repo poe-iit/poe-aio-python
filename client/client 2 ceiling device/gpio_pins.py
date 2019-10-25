@@ -16,7 +16,7 @@ import time
 class CeilingDeviceGPIO:
 
     def init(self):
-        setup_pins()
+        self.setup_pins()
 
     def listen_for_smoke(self):
 
@@ -26,7 +26,7 @@ class CeilingDeviceGPIO:
                 self.write_to_GPIO(1)
             time.sleep(0.0001)
 
-    def setup_pins():
+    def setup_pins(self):
         # Use BCM layout
         GPIO.setmode(GPIO.BCM)
 
