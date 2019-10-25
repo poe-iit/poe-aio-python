@@ -40,7 +40,7 @@ class Client:
             events = selectors.EVENT_READ | selectors.EVENT_WRITE
             data = types.SimpleNamespace(
                 connid=connid,
-                msg_total=sum(len(m) for m in message),
+                msg_total= 1,
                 recv_total=0,
                 messages=message,
                 outb=b"",
