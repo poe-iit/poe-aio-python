@@ -91,7 +91,6 @@ def main():
     # listen for the smoke detector in another thread
     process = Thread(target=CeilingDeviceGPIO.listen_for_smoke)
     process.start()
-    threads.append(process)
 
     host = "127.0.0.1"
     port = 65432
