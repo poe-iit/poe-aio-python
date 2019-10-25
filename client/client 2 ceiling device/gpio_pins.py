@@ -15,20 +15,20 @@ import time
 
 class CeilingDeviceGPIO:
 
-    def init():
+    def __init__(self):
         # Use BCM layout
-        GPIO.setmode(GPIO.BCM)
+        self.GPIO.setmode(GPIO.BCM)
 
         # setup emergency type pins
-        GPIO.setup(9, GPIO.OUT) # Fire
-        GPIO.setup(10, GPIO.OUT) # Shooter
-        GPIO.setup(11, GPIO.OUT)
-        GPIO.setup(12, GPIO.OUT)
+        self.GPIO.setup(9, GPIO.OUT) # Fire
+        self.GPIO.setup(10, GPIO.OUT) # Shooter
+        self.GPIO.setup(11, GPIO.OUT)
+        self.GPIO.setup(12, GPIO.OUT)
 
         # setup smoke detector listener pin
-        GPIO.setup(13, GPIO.IN)
+        self.GPIO.setup(13, GPIO.IN)
 
-    def listen_for_smoke():
+    def listen_for_smoke(self):
         smoke_count = 0
 
         while smoke_count < 1:
@@ -38,9 +38,9 @@ class CeilingDeviceGPIO:
                 smoke_count+=1
             time.sleep(1)
         print("Smoke detected from ceiling client, notifying server and turning on fire lights")
-        listen_for_smoke() #start listening again
+        self.listen_for_smoke() #start listening again
 
-    def write_to_GPIO(emergency_type):
+    def write_to_GPIO(self, emergency_type):
 
         try:
             if emergency_type == 1:
