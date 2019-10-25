@@ -86,13 +86,13 @@ def accept_wrapper(sock):
 
 def main():
 
-    ceilingDevice = CeilingDeviceGPIO() # init GPIO pins on device
+    CeilingDeviceGPIO.init() # init GPIO pins on device
 
     # listen for the smoke detector in another thread
-    process = Thread(target=ceilingDevice.listen_for_smoke)
+    process = Thread(target=CeilingDeviceGPIO.listen_for_smoke)
     process.start()
 
-    print("Listening for Smoke")
+    print("Listening for smoke")
 
     host = "127.0.0.1"
     port = 65432
