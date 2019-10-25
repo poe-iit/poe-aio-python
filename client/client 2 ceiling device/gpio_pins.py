@@ -30,6 +30,7 @@ class CeilingDeviceGPIO:
                 smoke_count+=1
             time.sleep(1)
         print("Smoke detected from ceiling client, notifying server and turning on fire lights")
+        time.sleep(5)
         self.listen_for_smoke() #start listening again
 
     def write_to_GPIO(self, emergency_type):
