@@ -90,18 +90,39 @@ class Client:
 
 
 
+    def checkQueue(self,queue):
+        global labelList
+        print("starting queue check")
+        while True:
+            check = queue.get() # halts until something is in the queue
+            if check == -1:
+                break
+            else:
+                # Whenever something is added to the queue
+                # communicate with server
+
+                if check == 0:
+                    print("Sending fire alert to server")
+
+
     def main():
 
         server_address = "127.0.0.1:65433"
         sel = selectors.DefaultSelector()
-        client = Client(server_address, sel)
 
+        client = Client(server_address, sel)
         gpio_object = CeilingDeviceGPIO()
 
-
+        # setup a queue to communicate between the listening for smoke thread and this main thread
+        queue = Queue()
         # listen for the smoke detector in another thread
-        process = Thread(target=gpio_object.listen_for_smoke)
+        process = Thread(target=gpio_object.listen_for_smoke, args = (queue,))
         process.start()
+
+        # start thread that checks for updates to the queue
+        check = threading.Thread(target = client.checkQueue, args = (argv,))
+        check.daemon = True
+        check.start()
 
         print("Listening for smoke")
 
