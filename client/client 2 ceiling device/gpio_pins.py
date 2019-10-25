@@ -39,6 +39,8 @@ class CeilingDeviceGPIO:
         # setup smoke detector listener pin
         GPIO.setup(13, GPIO.IN)
 
+        print("Setup pins on pi")
+
     def write_to_GPIO(self, emergency_type):
 
         try:
