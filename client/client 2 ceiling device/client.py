@@ -116,11 +116,11 @@ class Client:
         gpio_object = CeilingDeviceGPIO(queue)
 
         # listen for the smoke detector in another thread
-        process = Thread(target=gpio_object.listen_for_smoke, args = (queue,))
+        process = Thread(target=gpio_object.listen_for_smoke)
         process.start()
 
         # start thread that checks for updates to the queue
-        check = threading.Thread(target = client.checkQueue, args = (argv,))
+        check = threading.Thread(target = client.checkQueue, args = (queue,))
         check.daemon = True
         check.start()
 
