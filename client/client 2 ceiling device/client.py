@@ -23,7 +23,7 @@ from threading import Thread
 
 class Client:
 
-    def __init__(server_address, sel):
+    def __init__(self,server_address, sel):
         self.server_address = server_address
         self.sel = sel
 
