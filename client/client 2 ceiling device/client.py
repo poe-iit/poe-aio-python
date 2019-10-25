@@ -15,6 +15,7 @@ import selectors
 import types
 from gpio_pins import CeilingDeviceGPIO
 from threading import Thread
+from queue import Queue
 
 
 
@@ -100,7 +101,6 @@ class Client:
             else:
                 # Whenever something is added to the queue
                 # communicate with server
-
                 if check == 0:
                     print("Sending fire alert to server")
 
