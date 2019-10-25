@@ -105,7 +105,7 @@ class Client:
                     print("Sending fire alert to server")
                     message = [b"Fire alert recieved from ceiling device"]
 
-                    self.start_connections(int("127.0.0.1"), , int(65433), message)
+                    self.start_connections(int("127.0.0.1"),int(65433), message)
 
 
     def main():
