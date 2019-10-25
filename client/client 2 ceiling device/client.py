@@ -96,7 +96,7 @@ class Client:
         sel = selectors.DefaultSelector()
         client = Client(server_address, sel)
 
-        ceiling_client = CeilingDeviceGPIO.init() # init GPIO pins on device
+        ceiling_client = CeilingDeviceGPIO() # init GPIO pins on device
 
         # listen for the smoke detector in another thread
         process = Thread(target=ceiling_client.listen_for_smoke)
