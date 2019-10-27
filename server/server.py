@@ -107,7 +107,7 @@ class Server:
                         # Make GUI Popup for verification
                         # Once approved, call pyfirmata code on arduino to change lights
                         self.argv.put(2)
-                        self.alert_client_2(message)
+                        #self.alert_client_2(message)
             else:
                 print("closing connection to")
                 sel.unregister(sock)

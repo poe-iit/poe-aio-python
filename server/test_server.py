@@ -7,7 +7,8 @@ from queue import Queue
 
 sel = selectors.DefaultSelector()
 
-client_1_address = "127.0.0.1:65431"
+client_1_address = "127.0.0.1"
+client_1_port = 65431
 client_2_ip = "127.0.0.1"
 client_2_port = "65432"
 client_2_sending_address = "('127.0.0.1', 65432)"
@@ -18,67 +19,75 @@ class Server:
         self.host = host
         self.port = port
         self.argv = argv
+        self.server_socket = None
 
+        self.client1_address = "127.0.0.1"
+        self.client1_port = 65431
+        self.client2_address = "127.0.0.1"
+        self.client2_port = "65432"
+
+        self.client1 = None
+        self.client2 = None
+
+        self.data = types.SimpleNamespace(
+            connid=1,
+            msg_total=1,
+            recv_total=0,
+            messages=None,
+            outb=b"",
+        )
+
+        self.client1_connected = False
 
     # Registers and binds the sockets. Sets the socket to listen on the host and port to act as a server
     def init_sockets_and_listen(self):
 
         try:
             num_conns = 1
-            lsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            lsock.bind((self.host, self.port))
-            lsock.listen()
+            self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.server_socket.bind((self.host, self.port))
+            self.server_socket.listen()
             print("listening on", (self.host, self.port))
-            lsock.setblocking(False)
-            sel.register(lsock, selectors.EVENT_READ, data=None)
+            self.server_socket.setblocking(False)
+            sel.register(self.server_socket, selectors.EVENT_READ, data=None)
         except:
             print("could not init socket, retrying")
             self.init_sockets_and_listen()
 
-
-    # Connects to a client with specified host and port with and sends custom message
-    def start_connections(self, host, port, num_conns, message):
-        try:
-            # starts a new connection to client 2
-            server_addr = (host, port)
-            connid = 1
-            print("starting connection", connid, "to", server_addr)
-            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            sock.setblocking(False)
-            sock.connect_ex(server_addr)
-            events = selectors.EVENT_READ | selectors.EVENT_WRITE
-            data = types.SimpleNamespace(
-                connid=connid,
-                msg_total=1,
-                recv_total=0,
-                messages=message,
-                outb=b"",
-            )
-            sel.register(sock, events, data=data)
-            sock.send(data.messages)
-
-
-        except BlockingIOError:
-            print("travis sucks at socket programming, caught blocking error, retrying")
-            self.start_connections(host, port, num_conns, message)
-
-
     # Sends emergency message to the ceiling device
     def alert_client_2(self, message):
-        host = client_2_ip
-        port  = client_2_port
-        num_conns = 1
-        self.start_connections(host, int(port), int(num_conns), message)
+
+        self.data.messages = b"jeff"
+        self.client1.send(self.data.messages)
 
 
-    # registers the new client with the socket
+    # determines which client is connecting to the server
+    # saves those connections to Server object to easily communicate with them
     def accept_wrapper(self, sock):
         conn, addr = sock.accept()  # Should be ready to read
-        print("accepted connection from", addr)
-        conn.setblocking(False)
-        data = types.SimpleNamespace(addr=addr, inb=b"", outb=b"")
-        events = selectors.EVENT_READ | selectors.EVENT_WRITE
-        sel.register(conn, events, data=data)
+        print(addr[0])
+        print(addr[1])
+
+        # distinguish client 1 from 2 while testing locally
+        if not self.client1_connected:
+            self.client1 = conn
+            self.client_1_port = addr[1]
+            print("accepted connection from client 1")
+            self.client1.setblocking(False)
+            data = types.SimpleNamespace(addr=addr, inb=b"", outb=b"")
+            events = selectors.EVENT_READ | selectors.EVENT_WRITE
+            sel.register(conn, events, data=data)
+
+            self.client1.send(b"Server got your message")
+            self.client1_connected = True
+
+        if addr[1] != self.client1_port:
+            self.client2 = conn
+            print("accepted connection from client 2")
+            self.client2.setblocking(False)
+            data = types.SimpleNamespace(addr=addr, inb=b"", outb=b"")
+            events = selectors.EVENT_READ | selectors.EVENT_WRITE
+            sel.register(conn, events, data=data)
 
 
     # Handles every incoming connection to the server, determines if the message is meant to be read for contents or if the message is telling the server to shut down
@@ -107,7 +116,7 @@ class Server:
                         # Make GUI Popup for verification
                         # Once approved, call pyfirmata code on arduino to change lights
                         self.argv.put(2)
-                        self.alert_client_2(message)
+                        #self.alert_client_2(message)
             else:
                 print("closing connection to")
                 sel.unregister(sock)

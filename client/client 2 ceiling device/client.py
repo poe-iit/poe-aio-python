@@ -13,12 +13,9 @@ import sys
 import socket
 import selectors
 import types
-from gpio_pins import CeilingDeviceGPIO
+#from gpio_pins import CeilingDeviceGPIO
 from threading import Thread
 from queue import Queue
-
-
-
 
 
 
@@ -28,6 +25,8 @@ class Client:
         self.server_address = server_address
         self.server_port = server_port
         self.sel = sel
+        self.server = None
+        self.client_socket = None
 
     def start_connections(self, host, port, num_conns, message):
         server_addr = (host, port)
@@ -72,24 +71,16 @@ class Client:
                 print("closing connection")
                 self.sel.unregister(sock)
                 sock.close()
-        # Writing message back to server
-        #if mask & selectors.EVENT_WRITE:
-            #if not data.outb and data.messages:
-                #data.outb = data.messages.pop(0)
-            #if data.outb:
-                #print("sending", repr(data.outb), "to connection", data.connid)
-                #sent = sock.send(data.outb)  # Should be ready to write
-                #data.outb = data.outb[sent:]
 
 
 
     def accept_wrapper(self, sock):
         conn, addr = sock.accept()  # Should be ready to read
-        print("accepted connection from", addr)
-        conn.setblocking(False)
-        data = types.SimpleNamespace(addr=addr, inb=b"", outb=b"")
-        events = selectors.EVENT_READ | selectors.EVENT_WRITE
-        self.sel.register(conn, events, data=data)
+
+        if addr[0] == self.server_addr:
+            print("accepted connection from", addr)
+            self.server = conn
+            self.server.setblocking(False)
 
 
 
@@ -106,7 +97,8 @@ class Client:
                     print("Sending fire alert to server")
                     message = b"Fire alert recieved from ceiling device"
                     num_conns = 1
-                    self.start_connections("127.0.0.1", int(65433), int(num_conns), message)
+                    #self.start_connections("127.0.0.1", int(65433), int(num_conns), message)
+                    self.server.send(message)
 
 
     def main():
@@ -114,40 +106,49 @@ class Client:
         server_address = "127.0.0.1"
         server_port = "65433"
         sel = selectors.DefaultSelector()
-        # setup a queue to communicate between the listening for smoke thread and this main thread
-        queue = Queue()
 
         client = Client(server_address, server_port, sel)
-        gpio_object = CeilingDeviceGPIO(queue)
+
+        # connect to the server so it knows we exist
+        client.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        client.client_socket.connect_ex((client.server_address, int(client.server_port)))
+
+        # wait for response from server
+        response = client.client_socket.recv(1024)
+
+        if response:
+            print(str(response))
+
+        # setup a queue to communicate between the listening for smoke thread and this main thread
+        queue = Queue()
+        #gpio_object = CeilingDeviceGPIO(queue)
 
         # listen for the smoke detector in another thread
-        process = Thread(target=gpio_object.listen_for_smoke)
-        process.start()
+        #process = Thread(target=gpio_object.listen_for_smoke)
+        #process.start()
 
         print("Listening for smoke")
 
         # start thread that checks for updates to the queue
-        check = Thread(target = client.checkQueue, args = (queue,))
-        check.daemon = True
-        check.start()
+        #check = Thread(target = client.checkQueue, args = (queue,))
+        #check.daemon = True
+        #check.start()
 
 
         host = "127.0.0.1"
         port = 65432
         num_conns = 1
 
-        lsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        lsock.bind((host, port))
-        lsock.listen()
+        client.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        client.client_socket.bind((host, port))
+        client.client_socket.listen()
         print("Ceiling device started")
         print("listening for messages from server on", (host, port))
-        lsock.setblocking(False)
-        client.sel.register(lsock, selectors.EVENT_READ, data=None)
-
+        client.client_socket.setblocking(False)
 
         try:
             while True:
-                events = sel.select(timeout=None)
+                events = client.sel.select(timeout=None)
                 for key, mask in events:
                     if key.data is None:
                         client.accept_wrapper(key.fileobj)
