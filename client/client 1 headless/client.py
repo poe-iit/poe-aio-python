@@ -76,6 +76,7 @@ class Client:
                 message = b"Fire from headless client1"
                 #send message to server
                 client.client_socket.send(message)
+                print("Sent message to server")
 
         try:
             while True:
