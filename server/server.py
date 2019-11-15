@@ -100,14 +100,14 @@ class Server:
                         message =  b"FORWARDING EMERGENCY FROM HEADLESS CLIENT, Fire"
                         self.alert_client_2(message)
                         # Make GUI Popup for verification
-                        self.argv.put(0)
+                        self.argv.put([0, 1])
                         # Once approved, call pyfirmata code on arduino to change lights
                     if "Shooter" in recieved_message:
                         print("Alerting Public Safety there is a shooter")
                         message =  b"FORWARDING EMERGENCY FROM HEADLESS CLIENT, Shooter"
                         # Make GUI Popup for verification
                         # Once approved, call pyfirmata code on arduino to change lights
-                        self.argv.put(2)
+                        self.argv.put([2, 1])
                         self.alert_client_2(message)
             else:
                 print("closing connection to")

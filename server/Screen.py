@@ -14,6 +14,8 @@ buttonList = [] # List of the buttons
 frameList = [] # List of the frames
 activeList = [False, False, False, False] # List to check status of buttons
 
+popupList = [] # List of popups currently active
+
 root = tk.Tk()
 root.attributes('-fullscreen', True) # auto-set to fullscreen
 
@@ -24,36 +26,52 @@ root.geometry(str(w) + 'x' + str(h)) # Setting the window size
 root.bind("<Escape>", lambda event: root.attributes('-fullscreen', False)) # Pressing Escape turns off fullscreen
 root.bind("<Enter>", lambda event: root.attributes('-fullscreen', True)) # Pressing Enter turns on fullscreen
 root.bind("<Delete>", lambda event: root.destroy()) # Pressing Delete closes the window
+root.bind("<x>", lambda event: destroyPopup()) # Pressing Delete closes the window
 
 helv = font.Font(family = 'Helvetica', size = 24, weight = "bold") # Font settings
 
 
+def destroyPopup():
+    global popupList
+    while len(popupList) > 0:
+        msg = popupList[0]
+        popupList = popupList[1:len(popupList)]
+        msg.destroy()
+
 # For popup
 def statusCheck(check, bIndex, msg): #Checks whether to flip the status, and flips it
-    global buttonList, activeList, labelList, colours
+    global buttonList, activeList, labelList, popupList, colours
     if check:
         cButton = buttonList[bIndex]
         cButton.config(bg = colours[bIndex])
         activeList[bIndex] = True
         #Server.alert_client_2() #send emergency type to client 2
-
-
+    popupList.remove(msg)
     msg.destroy()
 
 
-def status(l): #Creates button for statusCheck to flip status of button
+def status(l, iden = 0): #Creates button for statusCheck to flip status of button
     global buttonList, activeList, labelList, colours, w, h, helv
     bIndex = labelList.index(l) # Finds button
+
+    # configures message based on iden
+    textmsg = l
+    if iden == 1:
+        textmsg += " from headless client"
+    elif iden == 2:
+        textmsg += " from ceiling client"
+
     # Flips the status of button
     if not activeList[bIndex]: #Creates the pop-up for statusCheck
         msg = tk.Tk()
         msg.geometry(str(w // 4) + 'x' + str(h // 4))
-        label = tk.Label(msg, text = l, font = helv)
+        label = tk.Label(msg, text = textmsg, font = helv)
         label.pack(fill = "x", pady = h // 16)
         B1 = tk.Button(msg, text = "Okay", command = lambda bIndex = bIndex: statusCheck(True, bIndex, msg))
         B2 = tk.Button(msg, text = "Cancel", command = lambda bIndex = bIndex: statusCheck(False, bIndex, msg))
         B1.pack(side = 'left', fill = 'both', expand = 1)
         B2.pack(side = 'right', fill = 'both', expand = 1)
+        popupList.append(msg)
         msg.mainloop()
     else: #If already active, it will change it to non-active
         cButton = buttonList[bIndex]
@@ -87,10 +105,12 @@ def checkQueue(argv):
     print("starting queue check")
     while True:
         check = argv.get()
-        if check == -1:
+        signal = check[0]
+        iden = check[1]
+        if signal == -1:
             break
         else:
-            status(labelList[check])
+            status(labelList[signal], iden)
 
 def main():
     argv = Queue()
