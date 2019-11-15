@@ -103,7 +103,7 @@ class Client:
 
     def main():
 
-        server_address = "127.0.0.1"
+        server_address = "192.168.2.52"
         server_port = "65433"
         sel = selectors.DefaultSelector()
 
