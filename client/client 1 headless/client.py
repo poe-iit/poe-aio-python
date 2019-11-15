@@ -59,6 +59,7 @@ class Client:
         # connect to the server so it knows we exist
         client.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         client.client_socket.connect_ex((client.server_address, int(client.server_port)))
+        client.client_socket.send(b"hey")
 
         # wait for response from server
         response = client.client_socket.recv(1024)
@@ -75,7 +76,7 @@ class Client:
             if emergency_type == 1:
                 message = b"Fire from headless client1"
                 #send message to server
-                client.client_socket.send(message)
+                client.client_socket.sendall(message)
                 print("Sent message to server")
 
         try:
@@ -85,6 +86,7 @@ class Client:
                     if key.data is None:
                         client.accept_wrapper(key.fileobj)
                     else:
+                        print("serviced connection")
                         client.service_connection(key, mask)
         except KeyboardInterrupt:
             print("caught keyboard interrupt, exiting")
