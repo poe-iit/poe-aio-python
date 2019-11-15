@@ -69,7 +69,7 @@ class Server:
         print(addr[1])
 
         # distinguish client 1 from 2 while testing locally
-        if addr[0] = "192.168.2.51"
+        if addr[0] == "192.168.2.51"
             self.client1 = conn
             self.client_1_port = addr[1]
             print("accepted connection from client 1")
@@ -80,7 +80,7 @@ class Server:
             self.client1.send(b"Server got your message")
             self.client1_connected = True
 
-        if addr[1] = "192.168.2.52"
+        if addr[1] == "192.168.2.52"
             self.client2 = conn
             print("accepted connection from client 2")
             self.client2.setblocking(False)
