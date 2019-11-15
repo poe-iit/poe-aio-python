@@ -72,6 +72,7 @@ class Client:
             emergency_type = 1
 
             print("Button Pressed")
+            time.sleep(100)
 
             if emergency_type == 1:
                 message = b"Fire from headless client1"
