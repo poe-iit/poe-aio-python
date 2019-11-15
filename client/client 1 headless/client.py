@@ -51,7 +51,7 @@ class Client:
 
     def main():
 
-        server_address = "192.168.2.51"
+        server_address = "192.168.2.50"
         server_port = "65433"
 
         client = Client(server_address, server_port)
