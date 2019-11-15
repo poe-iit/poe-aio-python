@@ -58,7 +58,7 @@ class Server:
     def alert_client_2(self, message):
 
         self.data.messages = b"jeff"
-        self.client1.send(self.data.messages)
+        self.client2.send(self.data.messages)
 
 
     # determines which client is connecting to the server
