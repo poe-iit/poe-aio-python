@@ -25,19 +25,19 @@ class Client:
 
         recv_data = sock.recv(1024)  # Should be ready to read
         if recv_data:
-        data.outb += recv_data
-        recieved_message = str(data.outb)
-        print("Got message from server:", str(data.outb))
+            data.outb += recv_data
+            recieved_message = str(data.outb)
+            print("Got message from server:", str(data.outb))
 
-        if "Fire" in recieved_message:
-             print("Fire alert recieved from server")
-             # write to arduino saying fire
-        if "Shooter" in recieved_message:
-            print("Shooter alert recieved from server")
-            # write to arduino saying shooter
-        if not recv_data:
-                print("closing connection")
-                sock.close()
+            if "Fire" in recieved_message:
+                print("Fire alert recieved from server")
+                # write to arduino saying fire
+            if "Shooter" in recieved_message:
+                print("Shooter alert recieved from server")
+                # write to arduino saying shooter
+            if not recv_data:
+                    print("closing connection")
+                    sock.close()
             
 
 
