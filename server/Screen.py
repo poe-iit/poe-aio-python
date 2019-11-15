@@ -26,7 +26,7 @@ root.geometry(str(w) + 'x' + str(h)) # Setting the window size
 root.bind("<Escape>", lambda event: root.attributes('-fullscreen', False)) # Pressing Escape turns off fullscreen
 root.bind("<Enter>", lambda event: root.attributes('-fullscreen', True)) # Pressing Enter turns on fullscreen
 root.bind("<Delete>", lambda event: root.destroy()) # Pressing Delete closes the window
-root.bind("<space>", lambda event: destroyPopup()) # Pressing Delete closes the window
+root.bind("<x>", lambda event: destroyPopup()) # Pressing Delete closes the window
 
 helv = font.Font(family = 'Helvetica', size = 24, weight = "bold") # Font settings
 
