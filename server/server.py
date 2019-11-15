@@ -59,7 +59,8 @@ class Server:
 
 
         except BlockingIOError:
-            print("travis sucks at socket programming, caught blocking error, retrying")
+            #print("travis sucks at socket programming, caught blocking error, retrying")
+            sock.close()
             self.start_connections(host, port, num_conns, message)
 
 
