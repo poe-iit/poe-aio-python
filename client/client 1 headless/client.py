@@ -24,7 +24,7 @@ class Client:
         data = key.data
 
         recv_data = sock.recv(1024)  # Should be ready to read
-            if recv_data:
+        if recv_data:
                 data.outb += recv_data
                 recieved_message = str(data.outb)
                 print("Got message from server:", str(data.outb))
