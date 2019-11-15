@@ -8,9 +8,9 @@ from queue import Queue
 sel = selectors.DefaultSelector()
 
 client_1_address = "127.0.0.1:65431"
-client_2_ip = "127.0.0.1"
+client_2_ip = "192.168.2.52"
 client_2_port = "65432"
-client_2_sending_address = "('127.0.0.1', 65432)"
+client_2_sending_address = "('192.168.2.52', 65432)"
 
 class Server:
 
