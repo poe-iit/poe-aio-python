@@ -69,25 +69,23 @@ class Server:
         print(addr[1])
 
         # distinguish client 1 from 2 while testing locally
-        if not self.client1_connected:
+        if addr[0] = "192.168.2.51"
             self.client1 = conn
             self.client_1_port = addr[1]
             print("accepted connection from client 1")
             self.client1.setblocking(False)
             data = types.SimpleNamespace(addr=addr, inb=b"", outb=b"")
-            events = selectors.EVENT_READ | selectors.EVENT_WRITE
-            sel.register(conn, events, data=data)
+
 
             self.client1.send(b"Server got your message")
             self.client1_connected = True
 
-        if addr[1] != self.client1_port:
+        if addr[1] = "192.168.2.52"
             self.client2 = conn
             print("accepted connection from client 2")
             self.client2.setblocking(False)
             data = types.SimpleNamespace(addr=addr, inb=b"", outb=b"")
-            events = selectors.EVENT_READ | selectors.EVENT_WRITE
-            sel.register(conn, events, data=data)
+
 
 
     # Handles every incoming connection to the server, determines if the message is meant to be read for contents or if the message is telling the server to shut down
