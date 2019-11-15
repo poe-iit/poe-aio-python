@@ -124,7 +124,7 @@ class Server:
 
     def main(argv):
 
-        host = "127.0.0.1"
+        host = "192.168.2.50"
         port = 65433
         server = Server(host, port, argv)
         server.init_sockets_and_listen()
