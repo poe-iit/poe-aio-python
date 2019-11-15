@@ -23,9 +23,7 @@ class Client:
         sock = key.fileobj
         data = key.data
 
-        # Got message from server
-        if mask & selectors.EVENT_READ:
-            recv_data = sock.recv(1024)  # Should be ready to read
+        recv_data = sock.recv(1024)  # Should be ready to read
             if recv_data:
                 data.outb += recv_data
                 recieved_message = str(data.outb)
@@ -41,6 +39,7 @@ class Client:
             if not recv_data:
                 print("closing connection")
                 sock.close()
+            
 
 
     # Whenever someone tries to connect, we can use the conn and addr to check who it is
