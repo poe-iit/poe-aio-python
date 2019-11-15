@@ -15,4 +15,3 @@ while True:
     print("Got connection from " + str(addr))
     ret_val = c.send("Thank you".encode('utf-8'))
     print ("ret_val={}".format(ret_val))
-    c.close()
